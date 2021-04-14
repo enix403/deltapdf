@@ -48,7 +48,8 @@ const _IconTextEntry = ({
     onTouch = () => { },
     onLongTouch = () => { },
     height = 60,
-    iconSize = 30
+    iconSize = 30,
+    textStyle = {}
 }) => {
     return (
         <View style={[styles.root, makeht(height)]}>
@@ -57,6 +58,7 @@ const _IconTextEntry = ({
                 android_ripple={{color: "#e0e0e0" }}
                 onPress={onTouch}
                 onLongPress={onLongTouch}
+                unstable_pressDelay={100}
             >
                 <View style={styles.iconContainer}>
                     <View style={[styles.icon, {
@@ -71,7 +73,7 @@ const _IconTextEntry = ({
                     <AppTextRegular 
                         ellipsizeMode="middle" 
                         numberOfLines={1} 
-                        style={styles.title}
+                        style={[styles.title, textStyle]}
                     >
                         {title}
                     </AppTextRegular>

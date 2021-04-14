@@ -6,3 +6,29 @@ fed6d6, ed5151 (red)
 edd6fe, b651ed (purple)
 ebdafa, a55fe3 (another purple)
 ffe5f2, ff5a98 (pink)
+
+Ripples:
+
+
+// const NavbarButton = ({ text, iconName, enabled=false }) => {
+//     let colorClass = enabled ? styles.barButtonEnabledColor : styles.barButtonDisabledColor;
+
+//     return (
+//         <View style={{flex: 1}}>
+//             <Pressable 
+//                 style={flexcenter()}
+//                 android_ripple={{color: '#baccff', borderless: true}}
+//             >
+//                 <Icon name={iconName} style={colorClass} size={28} />
+//                 <AppTextRegular
+//                     style={[
+//                         styles.barButtonText,
+//                         colorClass,
+//                     ]}
+//                 >
+//                     {text}
+//                 </AppTextRegular>
+//             </Pressable>
+//         </View>
+//     )
+// };

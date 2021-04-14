@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StatusBar } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { AppTextMedium as AppTextBold } from './app-text';
+import { AppTextMedium } from './app-text';
 
 const HEADER_MARGIN_TOP = StatusBar.currentHeight;
 const NAV_ICON_SIZE = 24;
@@ -19,15 +19,16 @@ const NavHeader = () => {
             justifyContent: 'flex-start',
             alignItems: "center",
 
+            borderBottomColor: '#dbdbdb',
+            borderBottomWidth: 1
+
             // elevation: 2
 
         }}>
             <StatusBar barStyle="dark-content" hidden={false} backgroundColor="#e3e3e3" translucent={true} />
 
             {/* Side Drawer icom */}
-            <View style={{
-                flex: 1,
-            }}>
+            <View style={{flex: 1}}>
                 <Icon name="format-list-bulleted" size={NAV_ICON_SIZE} />
             </View>
 
@@ -37,11 +38,11 @@ const NavHeader = () => {
                 flexDirection: "row",
                 justifyContent: "center",
             }}>
-                <AppTextBold style={{
+                <AppTextMedium style={{
                     fontSize: 23
                 }}>
                     Device Files
-                </AppTextBold>
+                </AppTextMedium>
             </View>
             
             {/* Search and options icon */}
