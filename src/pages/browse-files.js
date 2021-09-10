@@ -1,9 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { View, FlatList, Pressable, StyleSheet, Animated } from 'react-native';
+import React, { useCallback } from 'react';
+import {
+    View,
+    FlatList,
+    Pressable,
+    StyleSheet,
+    Animated,
+} from 'react-native';
 
 import IconTextEntry from './../components/icon-text-entry';
-import { AppTextRegular } from '../components/app-text';
-// backgroundColor: '#212531'
 
 
 const FileEntry = ({ fileName, fileInfo, onTouch = () => { }, onLongTouch = () => { } }) => {
@@ -114,7 +118,7 @@ const files = [
 
 const bottombar_styles = StyleSheet.create({
     overlay: {
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        backgroundColor: '#000000',
         position: 'absolute',
         bottom: 0,
         left: 0,
@@ -135,38 +139,110 @@ const bottombar_styles = StyleSheet.create({
     }
 });
 
-const BottomBar = () => {
 
-    const fadeAnim = useRef(new Animated.Value(0)).current;  // Initial value for opacity: 0
+const DRAWER_ANIM_DURATION = 150;
 
-    React.useEffect(() => {
-        Animated.timing(
-            fadeAnim,
-            {
-                toValue: 400,
-                duration: 1000,
+class BottomDrawer extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            container_height: new Animated.Value(0),
+            show: false
+        };
+    }
+
+    componentDidMount() {
+        if (this.props.enabled) {
+            this.showDrawer();
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.enabled != this.props.enabled) {
+            if (this.props.enabled) {
+                this.showDrawer();
             }
-        ).start();
-    }, [fadeAnim])
+            else {
+                this.hideDrawer();
+            }
+        }
+    }
 
-    return (
-        <Pressable style={bottombar_styles.overlay}>
-            <Animated.View style={[bottombar_styles.container, {height: fadeAnim}]}>
+    shouldComponentUpdate(nextProps) {
+        return nextProps.enabled != this.props.enabled;
+    }
 
-            </Animated.View>
-        </Pressable>
-    );
-};
+    showDrawer = () => {
+        this.setState({ show: true });
+        this.state.container_height.setValue(0);
+        Animated.timing(this.state.container_height, {
+                duration: DRAWER_ANIM_DURATION,
+                toValue: 1,
+                useNativeDriver: false
+        }).start(({ finished }) => {
+            if (!finished) {
+                this.setState({ show: false });
+            }
+        });
+    }
+
+
+    hideDrawer = () => {
+        if (!this.state.show) {
+            return;
+        }
+        this.state.container_height.setValue(1);
+        Animated.timing(this.state.container_height, {
+            duration: DRAWER_ANIM_DURATION,
+            toValue: 0,
+            useNativeDriver: false
+        }).start(() => {
+            this.setState({ show: false });
+        });
+    }
+
+    render() {
+        if (!this.state.show) {
+            return null;
+        }
+
+        return (
+            <Pressable
+                style={[bottombar_styles.overlay, {
+                    opacity: this.state.container_height.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 0.6]
+                    })
+                }]}
+                onPress={this.props.onBackdropPress}
+            >
+                <Animated.View style={[bottombar_styles.container, {
+                    height: this.state.container_height.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 400]
+                    })
+                }]}>
+
+                </Animated.View>
+            </Pressable>
+        );
+    }
+}
+
 
 class BrowseFilesPage extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            overlay: false
+        };
     }
 
     render() {
         return (
-            <>
+            <React.Fragment>
                 <View style={{
                     flex: 1,
                     paddingHorizontal: 10,
@@ -179,6 +255,7 @@ class BrowseFilesPage extends React.Component {
                                 <FileEntry
                                     fileName={file.name}
                                     fileInfo={file.dateCreated + " (" + file.size + ")"}
+                                    onTouch={() => { this.setState({ overlay: true }) }}
                                 />
                             );
                         }}
@@ -189,8 +266,13 @@ class BrowseFilesPage extends React.Component {
                         ListHeaderComponentStyle={{ height: 10 }}
                     />
                 </View>
-                {/* <BottomBar /> */}
-            </>
+                <BottomDrawer
+                    onBackdropPress={() => {
+                        this.setState({ overlay: false })
+                    }}
+                    enabled={this.state.overlay}
+                />
+            </React.Fragment>
         );
     }
 };
